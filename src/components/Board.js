@@ -1,22 +1,16 @@
 import React from'react'
 import Square from './Square'
+import styles from './styles'
+import { withStyles } from '@material-ui/core'
 
-const style={
-    border: '5px solid darkblue',
-    borderRadius: '10px',
-    width: '500px',
-    height: '500px',
-    margin: '20px auto',
-    display: 'grid',
-    gridTemplate: 'repeat(3, 1fr) / repeat(3, 1fr)',
-}
+const Board=({winningSquares, squares, clickHandler, classes}) =>{
 
-const Board=({winningSquares, squares, clickHandler}) => (
-    <div style={style}>
+    return (
+    <div className={classes.boardStyle}>
         {squares.map((squareValue, i) => (
             <Square isWinningSquare={winningSquares && winningSquares.includes(i)} key={i} value={squareValue} clickHandler={() => clickHandler(i)}/>
         ))}
     </div>
     )
-
-export default Board
+        }
+export default withStyles(styles)(Board)

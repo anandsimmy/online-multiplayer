@@ -1,20 +1,17 @@
 import React, {  useState } from'react'
 import Board from './Board'
 import { calculateWinner } from '../helpers'
+import { confetti } from '../confetti'
+import styles from './styles'
+import { withStyles, Button }  from '@material-ui/core';
 
-const style={
-    width: '200px',
-    textAlign: 'center',
-    margin: '20px auto',
-    marginTop: '5%'
-}
-
-const Game=() => {
+const Game=(props) => {
 
     const [history, setHistory]= useState([Array(9).fill(null)])
     const [stepNumber, setStepNumber]= useState(0)
     const [xIsNext, setXIsNext]= useState(true)
     const { winner, winningSquares }= calculateWinner(history[history.length - 1])
+
     const clickHandler= (index) => {
         const boardHistory= history.slice(0, stepNumber + 1)
         const squares= boardHistory[boardHistory.length - 1]
@@ -25,16 +22,28 @@ const Game=() => {
         setStepNumber(stepNumber+1)
         setXIsNext(!xIsNext)
     }
+    const resetGame= () => {
+        setHistory([Array(9).fill(null)])
+        setStepNumber(0)
+        setXIsNext('X')
+    }
 
+    const { classes }=  props
+
+    winner ? confetti.start() : confetti.stop()
+    
     return (
-    <React.Fragment>
-        <div style={style}>
-           { winner ? 'Winner: ' + winner  : 
-            'Next is: ' + ( xIsNext ? 'X' : 'O' )}
+        <div className={classes.container}>
+            <h2 className={classes.header}>
+                { winner ? 'Winner: ' + winner  : 
+                    'Next is: ' + ( xIsNext ? 'X' : 'O' ) }
+            </h2>
+            <Button onClick={resetGame} variant="outlined" color="secondary" className={classes.newGameButton}>
+                Start New Game
+            </Button>
+            <Board winningSquares={winningSquares} squares={history[history.length - 1]} clickHandler={clickHandler}/>
         </div>
-        <Board winningSquares={winningSquares} squares={history[history.length - 1]} clickHandler={clickHandler}/>
-    </React.Fragment>
     )
 }
 
-export default Game
+export default withStyles(styles)(Game)
