@@ -2,6 +2,27 @@ const styles= (theme) => ({
     container: {
         textAlign: 'center'
     },
+    homeContainer: {
+        textAlign: 'center',
+        width: '20%',
+        margin: '10% auto',
+        [theme.breakpoints.between('xs','md')]: {
+            width:'70%',
+            marginTop: '20%'
+        }
+    },
+    paper:{
+        padding: '20px'
+    },
+    buttonNewGame: {
+        color: '#e1b382',
+        border: '1px solid #e1b382'
+    },
+    inputContainer:{
+        display: 'block',
+        padding: '10px',
+        paddingTop: '35px'
+    },
     header: {
         width: '200px',
         height: '50px',
@@ -25,7 +46,7 @@ const styles= (theme) => ({
         height: '500px',
         margin: '20px auto',
         display: 'grid',
-        marginTop: '2%',
+        marginTop: '4%',
         gridTemplate: 'repeat(3, 1fr) / repeat(3, 1fr)',
         [theme.breakpoints.between('xs','md')]: {
             width: '300px',
