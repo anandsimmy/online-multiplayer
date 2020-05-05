@@ -1,49 +1,93 @@
-import React, {  useState } from'react'
+import React, {  useState, useEffect } from'react'
 import Board from './Board'
-import { calculateWinner } from '../helpers'
+import { connect } from 'react-redux'
+import { calculateWinner } from '../calculateWinner'
 import { confetti } from '../confetti'
 import styles from './styles'
-import { withStyles, Button }  from '@material-ui/core';
+import { withStyles, Button }  from '@material-ui/core'
+import firebase from 'firebase'
 
 const Game=(props) => {
 
-    const [history, setHistory]= useState([Array(9).fill(null)])
-    const [stepNumber, setStepNumber]= useState(0)
-    const [xIsNext, setXIsNext]= useState(true)
-    const { winner, winningSquares }= calculateWinner(history[history.length - 1])
+    const { token }= props.match.params
+    const [gameData, setGameData]= useState({
+        boardState: Array(9).fill(null),
+        creatorToken: null,
+        joineeToken: null,
+        gameInfo: null,
+        xIsNext: true,
+        gamers: []
+    })
+    const { boardState, xIsNext }= gameData
+    const { winner, winningSquares }= calculateWinner(boardState)
+    useEffect(()=>{
+        firebase
+            .firestore()
+            .collection('games')
+            .where('gamers','array-contains',token)
+            .onSnapshot(res=>{
+                const gameData= res.docs[0].data()
+                console.log(gameData)
+                setGameData(gameData)
+            })
+    }, [])
 
     const clickHandler= (index) => {
-        const boardHistory= history.slice(0, stepNumber + 1)
-        const squares= boardHistory[boardHistory.length - 1]
-        if(winner || squares[index])
+        //if there is already a winner or square is already clicked and have a value inside it, or player not
+        //eligible is clicking squares dont do anything
+        if(winner || boardState[index] || (xIsNext && gameData.joineeToken === token) || 
+            (!xIsNext && gameData.creatorToken === token))
             return;
-        xIsNext ? squares[index] = 'X' : squares[index] = 'O'
-        setHistory([...boardHistory, squares])
-        setStepNumber(stepNumber+1)
-        setXIsNext(!xIsNext)
+        xIsNext ? boardState[index] = 'X' : boardState[index] = 'O'
+        firebase
+            .firestore()
+            .collection('games')
+            .doc(`${gameData.creatorToken}:${gameData.joineeToken}`)
+            .set({
+                ...gameData,
+                boardState: boardState,
+                xIsNext: !xIsNext
+            })
     }
     const resetGame= () => {
-        setHistory([Array(9).fill(null)])
-        setStepNumber(0)
-        setXIsNext('X')
+        firebase
+            .firestore()
+            .collection('games')
+            .doc(`${gameData.creatorToken}:${gameData.joineeToken}`)
+            .set({
+                ...gameData,
+                boardState: Array(9).fill(null),
+                xIsNext: true
+            })
     }
 
     const { classes }=  props
-
     winner ? confetti.start() : confetti.stop()
     
     return (
         <div className={classes.container}>
-            <h2 className={classes.header}>
-                { winner ? 'Winner: ' + winner  : 
-                    'Next is: ' + ( xIsNext ? 'X' : 'O' ) }
-            </h2>
-            <Button onClick={resetGame} variant="outlined" color="secondary" className={classes.newGameButton}>
-                Start New Game
-            </Button>
-            <Board winningSquares={winningSquares} squares={history[history.length - 1]} clickHandler={clickHandler}/>
+            { gameData &&
+                <React.Fragment>
+                <div>friend id is: {props.friendToken}</div>
+                <h2 className={classes.header}>
+                    { winner ? 'Winner: ' + winner  : 
+                        'Next is: ' + ( gameData && gameData.xIsNext ? 'X' : 'O' ) }
+                </h2>
+                <Button onClick={resetGame} variant="outlined" color="secondary" className={classes.newGameButton}>
+                    Start New Game
+                </Button>
+                <Board squares={boardState} winningSquares={winningSquares} clickHandler={clickHandler}/>
+                </React.Fragment>
+            }
         </div>
     )
+
+}
+const mapStateToProps=(state) => {
+    return {
+        creatorToken: state.creatorToken,
+        joineeToken: state.joineeToken
+    }
 }
 
-export default withStyles(styles)(Game)
+export default connect(mapStateToProps)(withStyles(styles)(Game))

@@ -7,7 +7,7 @@ const Board=({winningSquares, squares, clickHandler, classes}) =>{
 
     return (
     <div className={classes.boardStyle}>
-        {squares.map((squareValue, i) => (
+        {squares && squares.map((squareValue, i) => (
             <Square isWinningSquare={winningSquares && winningSquares.includes(i)} key={i} value={squareValue} clickHandler={() => clickHandler(i)}/>
         ))}
     </div>
