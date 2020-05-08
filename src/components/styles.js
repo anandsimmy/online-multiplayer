@@ -116,7 +116,6 @@ const styles= (theme) => ({
         background: 'white',
         borderRadius: '17px',
         '&:hover': {
-            background: '#FBC0D5',
             border: '1px solid #EE1C66'
         },
         [theme.breakpoints.between('xs','md')]:{
@@ -158,7 +157,7 @@ const styles= (theme) => ({
         }
     },
     boardStyle: {
-        border: '5px solid darkblue',
+        border: '5px solid #EB3374',
         borderRadius: '10px',
         width: '500px',
         height: '500px',
@@ -169,8 +168,7 @@ const styles= (theme) => ({
         [theme.breakpoints.between('xs','md')]: {
             width: '300px',
             height: '300px',
-            marginTop: '12%',
-            background: 'darkblue'
+            marginTop: '12%'
         }
     },
     exitIcon:{

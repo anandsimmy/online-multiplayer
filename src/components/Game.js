@@ -35,7 +35,7 @@ const Game=(props) => {
             .collection('games')
             .where('gamers','array-contains',token)
             .onSnapshot(res=>{
-                const gameData= res && res.docs && res.docs[0].data()
+                const gameData= res && res.docs && res.docs.length > 0 && res.docs[0].data()
                 setGameData(gameData)
                 gameData && setNewGameStarted(gameData.newGameStarted)
             })
@@ -65,7 +65,6 @@ const Game=(props) => {
     }
 
     const newGameStartedMessageCloseToDataBase=async() => {
-        setLoader(true)
         await firebase
             .firestore()
             .collection('games')
@@ -73,7 +72,6 @@ const Game=(props) => {
             .update({
                 newGameStarted: false
             })
-        setLoader(false)
     }
 
     const resetGame=async () => {
@@ -86,7 +84,6 @@ const Game=(props) => {
                 xIsNext: true,
                 newGameStarted: true
             })
-        debugger
     }
 
     const titleText=() => {
