@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
+import * as serviceWorker from './serviceWorker';
 import Game from './components/Game';
 import Home from './components/Home'
 import firebaseConfigObj from './firebaseconfig'
@@ -26,3 +27,4 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+serviceWorker.register()
