@@ -18,8 +18,7 @@ const Home=(props) => {
     const [joinTokenInfo, setJoinTokenInfo]= useState({})
     // const [joinGameToken, setJoinGameToken]= useState(null)
 
-    const createNewGame= async() => {
-        setLoader(true)
+    const createNewGame= async() => {  
         const options= {
             min: 5,
             max: 5,
@@ -44,11 +43,14 @@ const Home=(props) => {
             })
             .then(()=>{
                 props.history.push(`/game/${newGame.p1_token}`)
-        })
+            })
+            .catch((err)=>{
+                setLoader(false)
+                console.log(err)
+            })
     }
 
     const joinGame= async() => {
-        setLoader(true)
         await firebase
             .firestore()
             .collection('games')
